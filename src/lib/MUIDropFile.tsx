@@ -10,7 +10,7 @@ import { IFieldProps, IMUIFileInputProps, MUIFileInput, TFile, ReadAsType, setVa
 
 export interface DropFileFieldProps {
 	onDropFile?: (imgFiles: TFile[], remFiles?: File[]) => void
-	loadFile?: (files: File[]) => Promise<File[]>
+	loadFiles?: (files: File[]) => Promise<any>[]
 	readAs?: ReadAsType
 	multiple?: boolean
 	label?: string | JSX.Element
@@ -35,7 +35,6 @@ export const MUIDropFile: React.FC<DropFileProps> = (props: DropFileProps) => {
 	const classes = useStyles(fieldProps)
 	const [files, setFiles] = React.useState<File[]>([])
 	const handleDisplay = (files: File[]) => {
-		console.log(files)
 		return <Box display="flex" flexDirection='column' alignItems="center" justifyContent="center">{files.map((file: File, index: number) =>
 			<Box className={classes.acceptedFile} m={1} p={2} key={file.name + index}>{file.name}</Box>)}</Box>
 	}
@@ -48,7 +47,7 @@ export const MUIDropFile: React.FC<DropFileProps> = (props: DropFileProps) => {
 		activeClass = classes.activeClass,
 		label = "Drag and drop a file/files here",
 		readAs,
-		loadFile,
+		loadFiles,
 		encoding = 'utf-8',
 		renderAccepted = handleDisplay,
 		fullWidth = true,
@@ -67,11 +66,13 @@ export const MUIDropFile: React.FC<DropFileProps> = (props: DropFileProps) => {
 			</Box>
 		</Box>
 	)
-	const handleDrop = async (files: File[]) => {
-		if (loadFile) {
-			const res = await loadFile?.(files)
-			setFiles(res)
-			setValue(res, formikProps, fieldProps)
+	const handleDrop = (files: File[]) => {
+		if (loadFiles) {
+			const resPromises = loadFiles?.(files)
+			Promise.all(resPromises).then((resFiles) => {
+				setValue(resFiles, formikProps, fieldProps)
+				setFiles(resFiles)
+			})
 			return
 		}
 		setValue(files, formikProps, fieldProps);
@@ -97,6 +98,7 @@ const useStyles = makeStyles<Theme, Pick<DropFileFieldProps, 'fullWidth'>>((them
 	return (createStyles({
 		defaultClass: {
 			border: '1px dashed grey', borderRadius: 8, minWidth: 400, height: 300, background: 'lightgrey', position: 'relative', flex: 1,
+			width: ({ fullWidth }) => fullWidth ? '100%' : 400
 		},
 		activeClass: { backgroundColor: 'transparent' },
 		acceptedFile: { background: 'lightgrey', border: '1px dashed grey', margin: theme.spacing(1), padding: theme.spacing(1), minWidth: 200 }

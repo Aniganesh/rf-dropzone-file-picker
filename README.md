@@ -48,7 +48,7 @@ fieldProps has the following type:
 ``` 
 {
 	onDropFile?: (imgFiles: TFile[], remFiles?: File[]) => void
-	loadFile?: (files: File[]) => Promise<File[]>
+	loadFiles?: (files: File[]) => Promise<any>[]
 	readAs?: ReadAsType
 	multiple?: boolean
 	label?: string | JSX.Element
@@ -67,7 +67,9 @@ fieldProps has the following type:
 
 * If there are common rules in both classes, CSS specificity will take over and the class defined later will take effect.
 
-fullWidth sets the width to 100% (only when no defaultClass is provided)
+fullWidth sets the width to 100% with some space on the right to display a preview of the files that have been dropped & accepted(only when no defaultClass is provided).
 
 * The renderAccepted function should take an array of files and display them within a container anyway you choose.
 * By default only the file names are displayed with a dashed border and in a container with minWidth 200 on the right side of the dropzone.
+* renderAccepted is used to show a preview of the file that has been dropped on the dropzone. By default only the file name will be visible within a rectangular container.
+* LoadFiles takes a function that returns an array of promises. Each of which will resolve to give a file. If the resolved object does not implement the File interface, then you would also need to provide a function for renderAccepted.

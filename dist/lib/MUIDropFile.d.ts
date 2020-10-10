@@ -2,7 +2,7 @@ import React from 'react';
 import { IFieldProps, TFile, ReadAsType } from 'react-forms';
 export interface DropFileFieldProps {
     onDropFile?: (imgFiles: TFile[], remFiles?: File[]) => void;
-    loadFile?: (files: File[]) => Promise<File[]>;
+    loadFiles?: (files: File[]) => Promise<any>[];
     readAs?: ReadAsType;
     multiple?: boolean;
     label?: string | JSX.Element;
